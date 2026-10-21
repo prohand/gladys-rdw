@@ -1,0 +1,601 @@
+{
+  "manifest_version": 1,
+  "type": "device",
+  "name": "RDW",
+  "description": {
+    "en": "Follow your Dutch vehicles: APK expiry, WAM insurance and recalls from the RDW register.",
+    "fr": "Suivez vos véhicules néerlandais : APK, assurance WAM et rappels du registre RDW.",
+    "de": "Deine niederländischen Fahrzeuge im Blick: APK, WAM-Versicherung und Rückrufe der RDW.",
+    "es": "Sigue tus vehículos neerlandeses: APK, seguro WAM y revisiones del registro RDW."
+  },
+  "version": "0.1.0",
+  "docker_image": "ghcr.io/prohand/gladys-rdw:0.1.0",
+  "gladys_version": ">=5.1.0",
+  "cover_image": "https://raw.githubusercontent.com/prohand/gladys-rdw/main/cover.png",
+  "categories": ["services"],
+  "transports": ["cloud"],
+  "config_schema": [
+    {
+      "key": "intro",
+      "type": "section",
+      "label": {
+        "en": "Getting started",
+        "fr": "Pour commencer",
+        "de": "Erste Schritte",
+        "es": "Primeros pasos"
+      },
+      "description": {
+        "en": "Type the plates of the vehicles to follow. The data comes from the public register of the RDW, the Dutch vehicle authority: no account, no key.",
+        "fr": "Saisissez les plaques des véhicules à suivre. Les données viennent du registre public de la RDW, l'autorité néerlandaise des véhicules : pas de compte, pas de clé.",
+        "de": "Gib die Kennzeichen der zu verfolgenden Fahrzeuge ein. Die Daten stammen aus dem öffentlichen Register der RDW, der niederländischen Fahrzeugbehörde: kein Konto, kein Schlüssel.",
+        "es": "Escribe las matrículas de los vehículos a seguir. Los datos vienen del registro público de la RDW, la autoridad neerlandesa de vehículos: sin cuenta, sin clave."
+      },
+      "links": [
+        {
+          "url": "https://opendata.rdw.nl/Voertuigen/Open-Data-RDW-Gekentekende_voertuigen/m9d7-ebf2",
+          "label": {
+            "en": "RDW open data",
+            "fr": "Données ouvertes RDW",
+            "de": "RDW Open Data",
+            "es": "Datos abiertos RDW"
+          }
+        },
+        {
+          "url": "https://github.com/prohand/gladys-rdw/blob/main/docs/en.md",
+          "label": {
+            "en": "Documentation",
+            "fr": "Documentation",
+            "de": "Dokumentation",
+            "es": "Documentación"
+          }
+        }
+      ]
+    },
+    {
+      "key": "plates",
+      "type": "string",
+      "label": {
+        "en": "Plates",
+        "fr": "Plaques",
+        "de": "Kennzeichen",
+        "es": "Matrículas"
+      },
+      "description": {
+        "en": "Dutch licence plates, separated by commas. Dashes and spaces are optional.",
+        "fr": "Plaques d'immatriculation néerlandaises, séparées par des virgules. Tirets et espaces facultatifs.",
+        "de": "Niederländische Kennzeichen, durch Kommas getrennt. Bindestriche und Leerzeichen sind optional.",
+        "es": "Matrículas neerlandesas, separadas por comas. Guiones y espacios opcionales."
+      },
+      "placeholder": {
+        "en": "e.g. AB-123-C, 12-XYZ-3",
+        "fr": "ex. AB-123-C, 12-XYZ-3",
+        "de": "z. B. AB-123-C, 12-XYZ-3",
+        "es": "p. ej. AB-123-C, 12-XYZ-3"
+      },
+      "required": true
+    },
+    {
+      "key": "apk_warning_days",
+      "type": "number",
+      "label": {
+        "en": "APK reminder (days)",
+        "fr": "Rappel APK (jours)",
+        "de": "APK-Erinnerung (Tage)",
+        "es": "Aviso APK (días)"
+      },
+      "description": {
+        "en": "How many days before the APK expiry date the vehicle shows as due and the reminder trigger fires.",
+        "fr": "Combien de jours avant l'échéance de l'APK le véhicule apparaît à faire et le déclencheur de rappel s'active.",
+        "de": "Wie viele Tage vor Ablauf der APK das Fahrzeug als fällig gilt und der Erinnerungsauslöser feuert.",
+        "es": "Cuántos días antes de la caducidad de la APK el vehículo aparece pendiente y se activa el disparador de aviso."
+      },
+      "required": false,
+      "default": 30,
+      "min": 1,
+      "max": 365
+    },
+    {
+      "key": "refresh_hours",
+      "type": "number",
+      "label": {
+        "en": "Register refresh (hours)",
+        "fr": "Lecture du registre (heures)",
+        "de": "Registerabfrage (Stunden)",
+        "es": "Lectura del registro (horas)"
+      },
+      "description": {
+        "en": "Hours between two reads of the RDW register, which changes once a day at most.",
+        "fr": "Heures entre deux lectures du registre RDW, qui change au plus une fois par jour.",
+        "de": "Stunden zwischen zwei Abfragen des RDW-Registers, das sich höchstens einmal am Tag ändert.",
+        "es": "Horas entre dos lecturas del registro RDW, que cambia como mucho una vez al día."
+      },
+      "required": false,
+      "default": 6,
+      "min": 1,
+      "max": 24
+    },
+    {
+      "key": "app_token",
+      "type": "secret",
+      "label": {
+        "en": "App token (optional)",
+        "fr": "Jeton d'application (facultatif)",
+        "de": "App-Token (optional)",
+        "es": "Token de aplicación (opcional)"
+      },
+      "description": {
+        "en": "Free token from opendata.rdw.nl that lifts the request throttling. Not needed for a few vehicles.",
+        "fr": "Jeton gratuit d'opendata.rdw.nl qui lève la limitation des requêtes. Inutile pour quelques véhicules.",
+        "de": "Kostenloses Token von opendata.rdw.nl, das die Anfragebegrenzung aufhebt. Für wenige Fahrzeuge unnötig.",
+        "es": "Token gratuito de opendata.rdw.nl que elimina la limitación de peticiones. Innecesario para pocos vehículos."
+      },
+      "required": false
+    }
+  ],
+  "actions": [
+    {
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 30
+    },
+    {
+      "key": "check_plate",
+      "label": {
+        "en": "Look up a plate",
+        "fr": "Consulter une plaque",
+        "de": "Kennzeichen abfragen",
+        "es": "Consultar una matrícula"
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "plate",
+          "type": "string",
+          "label": {
+            "en": "Plate",
+            "fr": "Plaque",
+            "de": "Kennzeichen",
+            "es": "Matrícula"
+          },
+          "placeholder": {
+            "en": "e.g. AB-123-C",
+            "fr": "ex. AB-123-C",
+            "de": "z. B. AB-123-C",
+            "es": "p. ej. AB-123-C"
+          },
+          "required": true
+        }
+      ]
+    }
+  ],
+  "scene_triggers": [
+    {
+      "key": "apk_reminder",
+      "label": {
+        "en": "APK due or expired",
+        "fr": "APK à faire ou expirée",
+        "de": "APK fällig oder abgelaufen",
+        "es": "APK pendiente o caducada"
+      },
+      "description": {
+        "en": "A vehicle's APK enters the reminder period, or expires. Fires once per APK date and stage.",
+        "fr": "L'APK d'un véhicule entre dans la période de rappel, ou expire. Une fois par date d'APK et par étape.",
+        "de": "Die APK eines Fahrzeugs tritt in den Erinnerungszeitraum ein oder läuft ab. Einmal pro APK-Datum und Stufe.",
+        "es": "La APK de un vehículo entra en el periodo de aviso, o caduca. Una vez por fecha de APK y etapa."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Vehicle",
+            "fr": "Véhicule",
+            "de": "Fahrzeug",
+            "es": "Vehículo"
+          }
+        },
+        {
+          "key": "stage",
+          "type": "multi_select",
+          "label": {
+            "en": "Stage",
+            "fr": "Étape",
+            "de": "Stufe",
+            "es": "Etapa"
+          },
+          "options": [
+            {
+              "value": "due_soon",
+              "label": {
+                "en": "Due soon",
+                "fr": "Bientôt à faire",
+                "de": "Bald fällig",
+                "es": "Pendiente pronto"
+              }
+            },
+            {
+              "value": "expired",
+              "label": {
+                "en": "Expired",
+                "fr": "Expirée",
+                "de": "Abgelaufen",
+                "es": "Caducada"
+              }
+            }
+          ]
+        }
+      ],
+      "variables": [
+        {
+          "key": "plate",
+          "type": "string",
+          "label": {
+            "en": "Plate",
+            "fr": "Plaque",
+            "de": "Kennzeichen",
+            "es": "Matrícula"
+          }
+        },
+        {
+          "key": "vehicle",
+          "type": "string",
+          "label": {
+            "en": "Vehicle (make and model)",
+            "fr": "Véhicule (marque et modèle)",
+            "de": "Fahrzeug (Marke und Modell)",
+            "es": "Vehículo (marca y modelo)"
+          }
+        },
+        {
+          "key": "expiry_date",
+          "type": "string",
+          "label": {
+            "en": "APK expiry date (YYYY-MM-DD)",
+            "fr": "Date d'échéance APK (AAAA-MM-JJ)",
+            "de": "APK-Ablaufdatum (JJJJ-MM-TT)",
+            "es": "Fecha de caducidad APK (AAAA-MM-DD)"
+          }
+        },
+        {
+          "key": "days_left",
+          "type": "number",
+          "label": {
+            "en": "Days left",
+            "fr": "Jours restants",
+            "de": "Verbleibende Tage",
+            "es": "Días restantes"
+          }
+        }
+      ]
+    },
+    {
+      "key": "recall_opened",
+      "label": {
+        "en": "Recall opened",
+        "fr": "Rappel ouvert",
+        "de": "Rückruf eröffnet",
+        "es": "Revisión abierta"
+      },
+      "description": {
+        "en": "The register shows a manufacturer recall not yet carried out on a vehicle.",
+        "fr": "Le registre indique un rappel constructeur pas encore effectué sur un véhicule.",
+        "de": "Das Register zeigt einen noch nicht durchgeführten Herstellerrückruf für ein Fahrzeug.",
+        "es": "El registro indica una llamada a revisión del fabricante aún no realizada en un vehículo."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Vehicle",
+            "fr": "Véhicule",
+            "de": "Fahrzeug",
+            "es": "Vehículo"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "plate",
+          "type": "string",
+          "label": {
+            "en": "Plate",
+            "fr": "Plaque",
+            "de": "Kennzeichen",
+            "es": "Matrícula"
+          }
+        },
+        {
+          "key": "vehicle",
+          "type": "string",
+          "label": {
+            "en": "Vehicle (make and model)",
+            "fr": "Véhicule (marque et modèle)",
+            "de": "Fahrzeug (Marke und Modell)",
+            "es": "Vehículo (marca y modelo)"
+          }
+        }
+      ]
+    },
+    {
+      "key": "insurance_lost",
+      "label": {
+        "en": "Insurance ended",
+        "fr": "Assurance terminée",
+        "de": "Versicherung beendet",
+        "es": "Seguro terminado"
+      },
+      "description": {
+        "en": "The register no longer shows a WAM third-party insurance for a vehicle that had one.",
+        "fr": "Le registre n'indique plus d'assurance WAM au tiers pour un véhicule qui en avait une.",
+        "de": "Das Register zeigt keine WAM-Haftpflichtversicherung mehr für ein Fahrzeug, das eine hatte.",
+        "es": "El registro ya no muestra un seguro WAM a terceros para un vehículo que lo tenía."
+      },
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Vehicle",
+            "fr": "Véhicule",
+            "de": "Fahrzeug",
+            "es": "Vehículo"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "key": "plate",
+          "type": "string",
+          "label": {
+            "en": "Plate",
+            "fr": "Plaque",
+            "de": "Kennzeichen",
+            "es": "Matrícula"
+          }
+        },
+        {
+          "key": "vehicle",
+          "type": "string",
+          "label": {
+            "en": "Vehicle (make and model)",
+            "fr": "Véhicule (marque et modèle)",
+            "de": "Fahrzeug (Marke und Modell)",
+            "es": "Vehículo (marca y modelo)"
+          }
+        }
+      ]
+    }
+  ],
+  "scene_actions": [
+    {
+      "key": "refresh_vehicles",
+      "label": {
+        "en": "Refresh the vehicles",
+        "fr": "Actualiser les véhicules",
+        "de": "Fahrzeuge aktualisieren",
+        "es": "Actualizar los vehículos"
+      },
+      "description": {
+        "en": "Read the RDW register now for every followed vehicle.",
+        "fr": "Lit le registre RDW maintenant pour chaque véhicule suivi.",
+        "de": "Liest das RDW-Register jetzt für jedes verfolgte Fahrzeug.",
+        "es": "Lee ahora el registro RDW para cada vehículo seguido."
+      },
+      "timeout_seconds": 30,
+      "outputs": [
+        {
+          "key": "success",
+          "type": "boolean",
+          "label": {
+            "en": "Register answered",
+            "fr": "Registre a répondu",
+            "de": "Register hat geantwortet",
+            "es": "Registro ha respondido"
+          }
+        },
+        {
+          "key": "vehicles",
+          "type": "number",
+          "label": {
+            "en": "Vehicles found",
+            "fr": "Véhicules trouvés",
+            "de": "Gefundene Fahrzeuge",
+            "es": "Vehículos encontrados"
+          }
+        },
+        {
+          "key": "alerts",
+          "type": "number",
+          "label": {
+            "en": "Things needing attention",
+            "fr": "Points à surveiller",
+            "de": "Punkte, die Beachtung erfordern",
+            "es": "Puntos que requieren atención"
+          }
+        }
+      ]
+    },
+    {
+      "key": "get_vehicle",
+      "label": {
+        "en": "Read a vehicle",
+        "fr": "Lire un véhicule",
+        "de": "Fahrzeug lesen",
+        "es": "Leer un vehículo"
+      },
+      "description": {
+        "en": "The APK, insurance and recall of one vehicle, for the following actions of the scene.",
+        "fr": "APK, assurance et rappel d'un véhicule, pour les actions suivantes de la scène.",
+        "de": "APK, Versicherung und Rückruf eines Fahrzeugs, für die folgenden Aktionen der Szene.",
+        "es": "APK, seguro y revisión de un vehículo, para las siguientes acciones de la escena."
+      },
+      "timeout_seconds": 30,
+      "fields": [
+        {
+          "key": "device",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "Vehicle",
+            "fr": "Véhicule",
+            "de": "Fahrzeug",
+            "es": "Vehículo"
+          },
+          "required": true
+        }
+      ],
+      "outputs": [
+        {
+          "key": "found",
+          "type": "boolean",
+          "label": {
+            "en": "In the register",
+            "fr": "Dans le registre",
+            "de": "Im Register",
+            "es": "En el registro"
+          }
+        },
+        {
+          "key": "plate",
+          "type": "string",
+          "label": {
+            "en": "Plate",
+            "fr": "Plaque",
+            "de": "Kennzeichen",
+            "es": "Matrícula"
+          }
+        },
+        {
+          "key": "vehicle",
+          "type": "string",
+          "label": {
+            "en": "Vehicle (make and model)",
+            "fr": "Véhicule (marque et modèle)",
+            "de": "Fahrzeug (Marke und Modell)",
+            "es": "Vehículo (marca y modelo)"
+          }
+        },
+        {
+          "key": "apk_stage",
+          "type": "string",
+          "label": {
+            "en": "APK stage (ok, due_soon, expired, unknown)",
+            "fr": "Étape APK (ok, due_soon, expired, unknown)",
+            "de": "APK-Stufe (ok, due_soon, expired, unknown)",
+            "es": "Etapa APK (ok, due_soon, expired, unknown)"
+          }
+        },
+        {
+          "key": "apk_expiry",
+          "type": "string",
+          "label": {
+            "en": "APK expiry date (YYYY-MM-DD)",
+            "fr": "Date d'échéance APK (AAAA-MM-JJ)",
+            "de": "APK-Ablaufdatum (JJJJ-MM-TT)",
+            "es": "Fecha de caducidad APK (AAAA-MM-DD)"
+          }
+        },
+        {
+          "key": "apk_days_left",
+          "type": "number",
+          "label": {
+            "en": "APK days left",
+            "fr": "Jours avant l'APK",
+            "de": "Tage bis zur APK",
+            "es": "Días hasta la APK"
+          }
+        },
+        {
+          "key": "insured",
+          "type": "boolean",
+          "label": {
+            "en": "Insured (WAM)",
+            "fr": "Assuré (WAM)",
+            "de": "Versichert (WAM)",
+            "es": "Asegurado (WAM)"
+          }
+        },
+        {
+          "key": "open_recall",
+          "type": "boolean",
+          "label": {
+            "en": "Open recall",
+            "fr": "Rappel ouvert",
+            "de": "Offener Rückruf",
+            "es": "Revisión abierta"
+          }
+        },
+        {
+          "key": "alerts",
+          "type": "number",
+          "label": {
+            "en": "Things needing attention",
+            "fr": "Points à surveiller",
+            "de": "Punkte, die Beachtung erfordern",
+            "es": "Puntos que requieren atención"
+          }
+        }
+      ]
+    }
+  ],
+  "widgets": [
+    {
+      "key": "vehicles",
+      "label": {
+        "en": "RDW vehicles",
+        "fr": "Véhicules RDW",
+        "de": "RDW-Fahrzeuge",
+        "es": "Vehículos RDW"
+      },
+      "description": {
+        "en": "APK, insurance and recalls of your vehicles, with what needs attention first.",
+        "fr": "APK, assurance et rappels de vos véhicules, avec ce qui demande attention en premier.",
+        "de": "APK, Versicherung und Rückrufe deiner Fahrzeuge, das Dringende zuerst.",
+        "es": "APK, seguro y revisiones de tus vehículos, con lo urgente primero."
+      },
+      "icon": "truck",
+      "settings": [
+        {
+          "key": "vehicle",
+          "type": "select",
+          "source": "devices",
+          "label": {
+            "en": "One vehicle only",
+            "fr": "Un seul véhicule",
+            "de": "Nur ein Fahrzeug",
+            "es": "Un solo vehículo"
+          },
+          "description": {
+            "en": "Leave empty to list every vehicle.",
+            "fr": "Laissez vide pour lister tous les véhicules.",
+            "de": "Leer lassen, um alle Fahrzeuge aufzulisten.",
+            "es": "Déjalo vacío para listar todos los vehículos."
+          },
+          "required": false
+        },
+        {
+          "key": "only_alerts",
+          "type": "boolean",
+          "label": {
+            "en": "Only what needs attention",
+            "fr": "Seulement ce qui demande attention",
+            "de": "Nur, was Beachtung erfordert",
+            "es": "Solo lo que requiere atención"
+          },
+          "required": false,
+          "default": false
+        }
+      ],
+      "action_timeout_seconds": 30
+    }
+  ]
+}
