@@ -16,11 +16,11 @@ test('the first release moves Unreleased under its version and links its tag', (
 test('the changelog of the repository can be rolled', async () => {
   const text = await readFile(new URL('../CHANGELOG.md', import.meta.url), 'utf8');
   assert.ok(text.includes('## [Unreleased]'));
-  assert.match(
-    text,
-    /^\[Unreleased\]: https:\/\/github\.com\/prohand\/gladys-rdw\/commits\/main$/m,
+  const { version: current } = JSON.parse(
+    await readFile(new URL('../package.json', import.meta.url), 'utf8'),
   );
+  assert.ok(text.includes(`[Unreleased]: ${REPO}/compare/v${current}...HEAD`));
   const rolled = rollChangelog(text, '9.9.9', '2026-10-21');
-  assert.ok(rolled.includes('## [9.9.9] - 2026-10-21'));
-  assert.ok(rolled.includes(`[9.9.9]: ${REPO}/releases/tag/v9.9.9`));
+  assert.ok(rolled.includes('## [Unreleased]\n\n## [9.9.9] - 2026-10-21'));
+  assert.ok(rolled.includes(`[9.9.9]: ${REPO}/compare/v${current}...v9.9.9`));
 });
