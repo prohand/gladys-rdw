@@ -8,8 +8,8 @@
     "de": "Deine niederländischen Fahrzeuge im Blick: APK, WAM-Versicherung und Rückrufe der RDW.",
     "es": "Sigue tus vehículos neerlandeses: APK, seguro WAM y revisiones del registro RDW."
   },
-  "version": "0.1.2",
-  "docker_image": "ghcr.io/prohand/gladys-rdw:0.1.2",
+  "version": "0.2.0",
+  "docker_image": "ghcr.io/prohand/gladys-rdw:0.2.0",
   "gladys_version": ">=5.3.0",
   "cover_image": "https://raw.githubusercontent.com/prohand/gladys-rdw/main/cover.png",
   "categories": ["vehicles", "services"],

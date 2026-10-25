@@ -1,6 +1,6 @@
 {
   "name": "gladys-rdw",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "private": true,
   "description": "Gladys Assistant external integration: follow your Dutch vehicles (APK, WAM insurance, recalls) from the RDW open data.",
   "type": "module",

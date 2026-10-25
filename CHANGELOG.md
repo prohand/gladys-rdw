@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-25
+
 ### Added
 
 - Catalog: the new `vehicles` shelf of the Gladys store, search keywords (kenteken, licence plate, APK-keuring…) and the Netherlands as the country the integration serves.
@@ -45,6 +47,7 @@ the notes of the version's GitHub Release.
   Releases, Dependabot.
 - `SECURITY.md` and `CLAUDE.md`.
 
-[Unreleased]: https://github.com/prohand/gladys-rdw/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/prohand/gladys-rdw/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/prohand/gladys-rdw/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/prohand/gladys-rdw/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/prohand/gladys-rdw/releases/tag/v0.1.1
