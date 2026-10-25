@@ -25,7 +25,7 @@ One Gladys device per plate, read-only:
 | Insured (WAM)   | binary         | `1` when the register knows a WAM insurance    |
 | Open recall     | binary         | `1` when a manufacturer recall is still to do  |
 
-Since Gladys 5.1 it also extends the scene editor and the dashboard
+It requires Gladys 5.3.0 or later, and extends the scene editor and the dashboard
 (`src/capabilities/`):
 
 | Capability                         | Manifest key       |

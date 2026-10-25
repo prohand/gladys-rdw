@@ -35,6 +35,8 @@ const allFields = [
 const CAPABILITY_FIELDS = ['scene_triggers', 'scene_actions', 'widgets'];
 const CAPABILITY_MIN_GLADYS_VERSION = [5, 1, 0];
 const CATEGORIES_MIN_GLADYS_VERSION = [4, 86, 0];
+const STORE_FIELDS = ['keywords', 'countries', 'music'];
+const STORE_FIELDS_MIN_GLADYS_VERSION = [5, 3, 0];
 const STORE_CATEGORIES = [
   'climate',
   'lighting',
@@ -48,6 +50,10 @@ const STORE_CATEGORIES = [
   'notifications',
   'assistants',
   'services',
+  'transport',
+  'vehicles',
+  'servers',
+  'leisure',
 ];
 
 const keysOf = (list) => (list ?? []).map((entry) => entry.key);
@@ -122,6 +128,36 @@ test('catalog categories are store keys, and need Gladys >= 4.86.0', () => {
     assert.ok(STORE_CATEGORIES.includes(category), `unknown category "${category}"`);
   }
   assert.ok(isAtLeast(minGladysVersion(), CATEGORIES_MIN_GLADYS_VERSION));
+});
+
+test('the catalog shelves are vehicles and services', () => {
+  assert.deepEqual(manifest.categories, ['vehicles', 'services']);
+});
+
+test('keywords, countries and music need Gladys >= 5.3.0', () => {
+  if (STORE_FIELDS.some((field) => field in manifest)) {
+    assert.ok(
+      isAtLeast(minGladysVersion(), STORE_FIELDS_MIN_GLADYS_VERSION),
+      `got "${manifest.gladys_version}"`,
+    );
+  }
+});
+
+test('1 to 10 unique search keywords of 2 to 30 characters', () => {
+  const { keywords } = manifest;
+  assert.ok(Array.isArray(keywords) && keywords.length >= 1 && keywords.length <= 10);
+  const normalized = keywords.map((keyword) => keyword.trim().toLowerCase());
+  assert.equal(new Set(normalized).size, keywords.length, 'duplicate keyword');
+  for (const keyword of normalized) {
+    assert.ok(keyword.length >= 2 && keyword.length <= 30, `keyword "${keyword}"`);
+  }
+});
+
+test('the integration is declared for the Netherlands only: the RDW register is Dutch', () => {
+  assert.deepEqual(manifest.countries, ['NL']);
+  for (const country of manifest.countries) {
+    assert.match(country, /^[A-Z]{2}$/);
+  }
 });
 
 test('scene triggers, scene actions and widgets need Gladys >= 5.1.0', () => {

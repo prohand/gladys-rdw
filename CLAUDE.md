@@ -11,9 +11,9 @@ vehicles by their licence plate** in the public register of the **RDW** (the
 Dutch vehicle authority), read from its open data portal `opendata.rdw.nl`
 (dataset `m9d7-ebf2`, no account, no key). Each plate is a Gladys device with
 its APK (periodic roadworthiness test) days left and expiry date, its WAM
-insurance and its open recall flag. Gladys 5.1+ adds scene triggers (APK due or
+insurance and its open recall flag. Requires Gladys 5.3+; scene triggers (APK due or
 expired, recall opened, insurance ended), scene actions (refresh, read one
-vehicle) and an "RDW vehicles" widget.
+vehicle) and an "RDW vehicles" widget come with it.
 
 Started from the official
 [JavaScript template](https://github.com/GladysAssistant/integration-template-js);
@@ -51,7 +51,7 @@ src/rdw/fleet.js          the cycle: read when due, publish states, badges, scen
 src/rdw/memory.js         last state seen per vehicle, in /data/rdw-state.json
 src/devices/vehicle.js    the vehicle device: discovery payload and states
 src/capabilities/         manifest actions, scene triggers/actions, dashboard widget
-gladys-assistant-integration.json   manifest (config schema, actions, 5.1 capabilities)
+gladys-assistant-integration.json   manifest (config schema, actions, 5.1 capabilities, 5.3 store fields)
 docs/en.md fr.md de.md es.md        user documentation, re-hosted by Gladys
 test/                     node --test, fake Gladys of the SDK + fake register (helpers/)
 ```
@@ -85,7 +85,9 @@ test/                     node --test, fake Gladys of the SDK + fake register (h
 - **The container rootfs is read-only.** Write only under `/data`
   (`RDW_DATA_DIR` overrides it). Never log the app token.
 - Manifest: `transports: ["cloud"]` (the integration only talks to the
-  internet), `gladys_version >=5.1.0` (scene and widget fields).
+  internet), `gladys_version >=5.3.0` (scene and widget fields need 5.1.0,
+  `keywords` / `countries` 5.3.0), `categories` `vehicles` + `services`,
+  `countries: ["NL"]` (Dutch register only).
 
 ## Rules
 

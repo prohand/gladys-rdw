@@ -7,7 +7,7 @@ Fahrzeugbehörde.
 
 ## Was du brauchst
 
-- Gladys **5.1 oder neuer**.
+- Gladys **5.3.0 oder neuer**.
 - Die **Kennzeichen** deiner Fahrzeuge (niederländische Kennzeichen).
 - Sonst nichts: Das RDW-Register ist offene Daten, ohne Konto und ohne Schlüssel.
 
