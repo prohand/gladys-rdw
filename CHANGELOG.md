@@ -10,6 +10,15 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+### Added
+
+- Catalog: the new `vehicles` shelf of the Gladys store, search keywords (kenteken, licence plate, APK-keuring…) and the Netherlands as the country the integration serves.
+
+### Changed
+
+- Gladys 5.3.0 or later is now required.
+- Gladys integration SDK 0.16.
+
 ## [0.1.2] - 2026-10-23
 
 - Maintenance release, no functional change.

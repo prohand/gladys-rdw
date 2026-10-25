@@ -6,7 +6,7 @@ public de la RDW, l'autorité néerlandaise des véhicules.
 
 ## Ce qu'il vous faut
 
-- Gladys **5.1 ou plus récent**.
+- Gladys **5.3.0 ou plus récent**.
 - Les **plaques d'immatriculation** de vos véhicules (plaques néerlandaises).
 - Rien d'autre : le registre RDW est en données ouvertes, sans compte ni clé.
 

@@ -6,7 +6,7 @@ the RDW, the Dutch vehicle authority.
 
 ## What you need
 
-- Gladys **5.1 or later**.
+- Gladys **5.3.0 or later**.
 - The **licence plates** of your vehicles (Dutch plates).
 - Nothing else: the RDW register is public open data, no account and no key.
 

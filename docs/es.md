@@ -6,7 +6,7 @@ registro público de la RDW, la autoridad neerlandesa de vehículos.
 
 ## Qué necesitas
 
-- Gladys **5.1 o posterior**.
+- Gladys **5.3.0 o posterior**.
 - Las **matrículas** de tus vehículos (matrículas neerlandesas).
 - Nada más: el registro de la RDW es de datos abiertos, sin cuenta ni clave.
 
